@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de clientes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            height: 100vh;
+            background: linear-gradient(to right, #ffafbd, #ffc3a0);
+        }
+
+        a {
+            padding: 10px;
+            margin-left: 100px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        a:hover {
+            border-bottom: 4px solid white;
+            color: white;
+            font-size: 21px;
+        }
+
+        nav {
+            height: 70px;
+            background-color: rgb(218, 137, 137);
+            position: fixed;
+            top: 0;
+        }
+
+        nav img {
+            border-radius: 50%;
+            margin-left: 30px;
+        }
+
+        footer {
+            height: 70px;
+            background-color: rgb(218, 137, 137);
+            bottom: 0;
+        }
+
+        table th {
+            color: white;
+
+        }
+
+        footer p {
+            width: 100%;
+            color: white;
+        }
+
+        .main {
+            width: 600px;
+            padding: 30px;
+            margin: 110px 400px 0px 400px;
+            color: white;
+            background-color: rgb(218, 137, 137);
+            border-radius: 20px;
+            border: 1px solid white;
+        }
+
+        .main2 {
+            width: auto;
+            padding: 20px;
+            color: white;
+            margin: 50px 0px 50px 0px;
+            background-color: rgb(218, 137, 137);
+            border-radius: 20px;
+            border: 1px solid white;
+        }
+
+
+        .titulo {
+            width: 100%;
+        }
+
+        .inputs-container input, .inputs-container label, .inputs-container button {
+            width: 100%;
+        }
+
+        .inputs-container input {
+            background-color: white;
+            border: none;
+        }
+
+        .inputs-container button {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .inputs-container button:hover {
+            background-color: rgb(72, 215, 215);
+            color: white;
+            border-bottom: 2px solid white;
+        }
+
+        .ms {
+            margin-left: 130px;
+        }
+
+        .ms1 {}
+    </style>
+</head>
+<body>
+
+    <nav class="w-100 d-flex justify-content-start">
+        <img src="https://www.designi.com.br/images/preview/11555071.jpg" alt="imagem da logo"> 
+        <a href="Exejavascript.html">voltar</a>
+    </nav>
+    
+    <div class="main">
+        <h1 class="text-center">Editar cadastro</h1>
+        <form class="inputs-container">
+            <input type="hidden" id="indice">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" required>
+
+            <label for="telefone">Telefone</label>
+            <input type="text" id="telefone" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+
+            <label for="cep">CEP</label>
+            <input type="text" id="cep" onblur="buscarEndereco()" required>
+
+            <label for="logradouro">Logradouro</label>
+            <input type="text" id="logradouro">
+
+            <label for="bairro">Bairro</label>
+            <input type="text" id="bairro">
+
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade">
+
+            <label for="estado">Estado</label>
+            <input type="text" id="estado">
+
+            <label for="senha">Senha</label>
+            <input type="text" id="senha">
+
+            <button class="mt-4" type="button" id="btnSalvar" onclick="salvarCadastro()">Cadastrar</button>
+        </form>
+    </div>
+    
+    <div class="main2">
+        <h2 class="text-center">Lista de Cadastros</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>CEP</th>
+                    <th>Rua</th>
+                    <th>Bairro</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Senha</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-corpo"></tbody>
+        </table>
+    </div>
+
+    <footer class="w-100 d-flex justify-content-start">
+        <p class="text-center mt-4">Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        function buscarEndereco() {
+            const cep = document.getElementById('cep').value;
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('logradouro').value = data.logradouro || '';
+                document.getElementById('bairro').value = data.bairro || '';
+                document.getElementById('cidade').value = data.localidade || '';
+                document.getElementById('estado').value = data.uf || '';
+            });
+        }
+
+        function salvarCadastro() {
+            let indice = document.getElementById('indice').value;
+            let cadastro = JSON.parse(localStorage.getItem('cadastro')) || [];
+
+            let novoCadastro = {
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                email: document.getElementById('email').value,
+                cep: document.getElementById('cep').value,
+                logradouro: document.getElementById('logradouro').value,
+                bairro: document.getElementById('bairro').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value
+            };
+
+            if (indice === '') {
+                cadastro.push(novoCadastro);
+            } else {
+                cadastro[indice] = novoCadastro;
+            }
+
+            localStorage.setItem('cadastro', JSON.stringify(cadastro));
+            document.querySelector('form').reset();
+            document.getElementById('indice').value = '';
+            document.getElementById('btnSalvar').innerText = "Cadastrar";
+            carregarCadastros();
+        }
+
+        function carregarCadastros() {
+            let tabela = document.getElementById('tabela-corpo');
+            tabela.innerHTML = '';
+            let cadastro = JSON.parse(localStorage.getItem('cadastro')) || [];
+
+            cadastro.forEach((item, index) => {
+                let linha = `<tr>
+                    <td>${item.nome}</td>
+                    <td>${item.telefone}</td>
+                    <td>${item.email}</td>
+                    <td>${item.cep}</td>
+                    <td>${item.logradouro}</td>
+                    <td>${item.bairro}</td>
+                    <td>${item.cidade}</td>
+                    <td>${item.estado}</td>
+                    <td>${item.senha}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarCadastro(${index})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="excluirCadastro(${index})">Excluir</button>
+                    </td>
+                </tr>`;
+                tabela.innerHTML += linha;
+            });
+        }
+
+        function excluirCadastro(index) {
+            let cadastro = JSON.parse(localStorage.getItem('cadastro')) || [];
+            cadastro.splice(index, 1);
+            localStorage.setItem('cadastro', JSON.stringify(cadastro));
+            carregarCadastros();
+        }
+
+        function editarCadastro(index) {
+            let cadastro = JSON.parse(localStorage.getItem('cadastro')) || [];
+            let item = cadastro[index];
+
+            document.getElementById('nome').value = item.nome;
+            document.getElementById('telefone').value = item.telefone;
+            document.getElementById('email').value = item.email;
+            document.getElementById('cep').value = item.cep;
+            document.getElementById('logradouro').value = item.logradouro;
+            document.getElementById('bairro').value = item.bairro;
+            document.getElementById('cidade').value = item.cidade;
+            document.getElementById('estado').value = item.estado;
+            document.getElementById('senha').value = item.senha;
+            document.getElementById('indice').value = index;
+            document.getElementById('btnSalvar').innerText = "Salvar";
+        }
+
+        window.onload = carregarCadastros;
+    </script>
+</body>
+</html>
